@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GS Energy Group • Performance Today. Sustainability Tomorrow.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fraunces:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Flip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/SplitText.min.js"></script>
+<style>
+  :root{
+    --bg:#0a0f0d;
+    --bg-2:#0f1612;
+    --ink:#f4f1ea;
+    --ink-dim:#a9b3a7;
+    --accent:#c8ff5a;
+    --accent-2:#7cf2c8;
+    --warm:#f5d36b;
+    --line:rgba(244,241,234,0.08);
+    --card:rgba(244,241,234,0.04);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+  body{font-weight:300;line-height:1.5}
+  ::selection{background:var(--accent);color:#0a0f0d}
+
+  /* ---------- Loader ---------- */
+  .loader{position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:28px;padding:20px}
+  .loader-logo{font-family:'Fraunces',serif;font-size:clamp(32px,7vw,80px);font-weight:300;letter-spacing:-0.04em;overflow:hidden;line-height:1.1;text-align:center}
+  .loader-logo .lw{display:inline-block;overflow:hidden;vertical-align:bottom}
+  .loader-logo .lw > span{display:inline-block;will-change:transform;transform:translateY(110%)}
+  .loader-bar{width:min(220px,60vw);height:2px;background:var(--line);position:relative;overflow:hidden;border-radius:2px}
+  .loader-bar .fill{position:absolute;inset:0;background:var(--accent);transform:scaleX(0);transform-origin:left;border-radius:2px}
+  .loader-pct{font-size:11px;letter-spacing:0.24em;color:var(--ink-dim);text-transform:uppercase;font-variant-numeric:tabular-nums}
+
+  /* ---------- Nav ---------- */
+  nav{position:fixed;top:0;left:0;right:0;z-index:50;padding:24px 40px;display:flex;justify-content:space-between;align-items:center;mix-blend-mode:difference}
+  nav .brand{font-family:'Fraunces',serif;font-weight:400;font-size:22px;letter-spacing:-0.02em;color:#fff}
+  nav .brand b{color:var(--accent);font-weight:500}
+  nav ul{display:flex;gap:36px;list-style:none}
+  nav ul a{color:#fff;text-decoration:none;font-size:13px;letter-spacing:0.04em;text-transform:uppercase;font-weight:400;position:relative}
+  nav ul a::after{content:"";position:absolute;left:0;bottom:-4px;width:0;height:1px;background:var(--accent);transition:width .4s ease}
+  nav ul a:hover::after{width:100%}
+  nav .cta{padding:10px 18px;border:1px solid rgba(255,255,255,.4);border-radius:999px;color:#fff;text-decoration:none;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;transition:all .3s}
+  nav .cta:hover{background:var(--accent);color:#0a0f0d;border-color:var(--accent)}
+
+  /* ---------- Sections base ---------- */
+  section{position:relative;min-height:100vh;padding:120px 40px;overflow:hidden}
+  .container{max-width:1400px;margin:0 auto;position:relative;z-index:2}
+
+  .eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:24px}
+  .eyebrow::before{content:"";width:24px;height:1px;background:var(--accent)}
+
+  h1,h2,h3{font-family:'Fraunces',serif;font-weight:300;letter-spacing:-0.025em;line-height:1.02}
+  h1{font-size:clamp(54px,9vw,160px)}
+  h2{font-size:clamp(40px,6vw,96px)}
+  h3{font-size:clamp(24px,2.4vw,36px)}
+  .italic{font-style:italic;font-weight:300;color:var(--accent)}
+
+  /* ---------- Morph blob (shared element) ---------- */
+  .morph-stage{position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:1}
+  .morph-blob{position:absolute;will-change:transform,filter;filter:blur(60px);opacity:.55;mix-blend-mode:screen}
+
+  /* ---------- HERO ---------- */
+  #hero{padding-top:200px;display:flex;align-items:center;min-height:100vh}
+  #hero .container{display:grid;grid-template-columns:1.4fr 1fr;gap:60px;align-items:end}
+  .hero-title{position:relative}
+  .hero-title .line{display:block;overflow:hidden}
+  .hero-title .line span{display:inline-block;will-change:transform}
+  .hero-tag{font-family:'Fraunces',serif;font-style:italic;color:var(--accent);font-weight:300}
+  .hero-meta{font-size:14px;color:var(--ink-dim);max-width:420px;line-height:1.7}
+  .hero-meta strong{color:var(--ink);font-weight:500}
+  .hero-stats{display:flex;gap:40px;margin-top:48px;border-top:1px solid var(--line);padding-top:32px}
+  .hero-stats div{flex:1}
+  .hero-stats b{font-family:'Fraunces',serif;font-size:48px;font-weight:300;display:block;color:var(--ink)}
+  .hero-stats span{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-dim)}
+
+  .scroll-hint{position:absolute;bottom:30px;left:40px;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink-dim);display:flex;align-items:center;gap:12px}
+  .scroll-hint::after{content:"";width:60px;height:1px;background:var(--accent);animation:slide 2s infinite}
+  @keyframes slide{0%{transform:scaleX(0);transform-origin:left}50%{transform:scaleX(1);transform-origin:left}51%{transform:scaleX(1);transform-origin:right}100%{transform:scaleX(0);transform-origin:right}}
+
+  /* ---------- About / Manifesto ---------- */
+  #about{background:var(--bg-2)}
+  .manifesto{font-family:'Fraunces',serif;font-size:clamp(28px,3.6vw,56px);font-weight:300;line-height:1.2;letter-spacing:-0.02em;max-width:1100px}
+  .manifesto .word{display:inline-block;overflow:hidden}
+  .manifesto .word span{display:inline-block}
+  .manifesto em{font-style:italic;color:var(--accent)}
+
+  .about-grid{margin-top:120px;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .about-grid > div{background:var(--bg-2);padding:40px 28px}
+  .about-grid b{font-family:'Fraunces',serif;font-size:64px;font-weight:300;display:block;color:var(--accent);line-height:1}
+  .about-grid span{font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-dim);margin-top:14px;display:block;line-height:1.5}
+
+  /* ---------- Services / Capabilities ---------- */
+  #services{padding-top:160px}
+  .services-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:80px;gap:40px;flex-wrap:wrap}
+  .services-head p{max-width:380px;color:var(--ink-dim);font-size:15px;line-height:1.7}
+  .services-list{border-top:1px solid var(--line)}
+  .service-item{border-bottom:1px solid var(--line);padding:48px 0;display:grid;grid-template-columns:80px 1fr 2fr 60px;gap:40px;align-items:center;cursor:pointer;position:relative;transition:padding .5s ease}
+  .service-item::before{content:"";position:absolute;inset:0;background:var(--accent);transform:scaleY(0);transform-origin:bottom;transition:transform .6s cubic-bezier(.7,0,.3,1);z-index:-1}
+  .service-item:hover{padding:64px 24px;color:#0a0f0d}
+  .service-item:hover::before{transform:scaleY(1);transform-origin:top}
+  .service-item:hover .svc-num,.service-item:hover .svc-arrow{color:#0a0f0d}
+  .service-item:hover h3{color:#0a0f0d}
+  .service-item:hover p{color:rgba(10,15,13,.7)}
+  .svc-num{font-family:'Fraunces',serif;font-size:18px;color:var(--ink-dim);font-weight:300;transition:color .4s}
+  .service-item h3{transition:color .4s}
+  .service-item p{font-size:14px;color:var(--ink-dim);line-height:1.7;max-width:520px;transition:color .4s}
+  .svc-arrow{font-size:32px;color:var(--ink-dim);transition:transform .5s ease,color .4s;font-family:'Fraunces',serif;font-weight:200}
+  .service-item:hover .svc-arrow{transform:rotate(45deg)}
+
+  /* ---------- Impact / Numbers ---------- */
+  #impact{background:var(--bg-2);padding:160px 40px}
+  .impact-headline{text-align:center;margin-bottom:120px}
+  .impact-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;max-width:1200px;margin:0 auto}
+  .impact-card{padding:60px 40px;border:1px solid var(--line);border-radius:24px;background:var(--card);position:relative;overflow:hidden;transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+  .impact-card::before{content:"";position:absolute;top:-50%;right:-30%;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,var(--accent),transparent 70%);opacity:.08;transition:opacity .6s}
+  .impact-card:hover{transform:translateY(-8px)}
+  .impact-card:hover::before{opacity:.18}
+  .impact-card .tag{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--accent);margin-bottom:32px}
+  .impact-card .big{font-family:'Fraunces',serif;font-size:clamp(60px,8vw,120px);font-weight:300;line-height:1;letter-spacing:-0.04em}
+  .impact-card .big sup{font-size:.4em;color:var(--ink-dim);font-weight:300;vertical-align:super}
+  .impact-card .desc{margin-top:24px;color:var(--ink-dim);font-size:14px;line-height:1.7;border-top:1px solid var(--line);padding-top:24px}
+  .impact-card .stats{display:flex;gap:32px;margin-top:32px}
+  .impact-card .stats div b{font-family:'Fraunces',serif;font-size:24px;color:var(--ink);display:block;font-weight:400}
+  .impact-card .stats div span{font-size:11px;color:var(--ink-dim);letter-spacing:0.1em;text-transform:uppercase}
+
+  /* ---------- Marquee / Compliance ---------- */
+  .marquee{padding:60px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;background:var(--bg)}
+  .marquee-track{display:flex;gap:80px;white-space:nowrap;will-change:transform;font-family:'Fraunces',serif;font-size:clamp(40px,6vw,90px);font-weight:300;font-style:italic;color:var(--ink)}
+  .marquee-track span{display:inline-flex;align-items:center;gap:80px}
+  .marquee-track i{font-style:normal;color:var(--accent);font-size:.5em;font-family:'Inter',sans-serif;letter-spacing:0.2em;text-transform:uppercase}
+
+  /* ---------- Process ---------- */
+  #process{padding:200px 40px}
+  .process-head{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-bottom:120px;align-items:end}
+  .process-head p{color:var(--ink-dim);font-size:16px;line-height:1.8;max-width:480px}
+  .process-track{position:relative;padding-left:40px}
+  .process-track::before{content:"";position:absolute;left:0;top:0;bottom:0;width:1px;background:var(--line)}
+  .process-track::after{content:"";position:absolute;left:-3px;top:0;width:7px;height:0;background:var(--accent);will-change:height}
+  .process-step{padding:48px 0;display:grid;grid-template-columns:140px 1fr 1fr;gap:60px;align-items:start;border-bottom:1px solid var(--line);position:relative}
+  .process-step::before{content:"";position:absolute;left:-44px;top:60px;width:8px;height:8px;border-radius:50%;background:var(--bg);border:1px solid var(--line);transition:all .4s}
+  .process-step.active::before{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 6px rgba(200,255,90,.15)}
+  .process-step .step-num{font-family:'Fraunces',serif;font-size:14px;letter-spacing:0.1em;color:var(--accent)}
+  .process-step h3{font-size:32px}
+  .process-step p{color:var(--ink-dim);font-size:14px;line-height:1.7}
+
+  /* ---------- Contact ---------- */
+  #contact{background:linear-gradient(180deg,var(--bg) 0%,#000 100%);padding:160px 40px 60px;min-height:auto}
+  .contact-hero{text-align:center;margin-bottom:80px}
+  .contact-hero h2{font-size:clamp(60px,12vw,200px);font-weight:300;letter-spacing:-0.04em;line-height:.95}
+  .contact-hero h2 .reveal{display:block;overflow:hidden}
+  .contact-hero h2 span{display:inline-block}
+  .contact-cta{display:inline-flex;align-items:center;gap:16px;margin-top:48px;padding:22px 36px;border:1px solid var(--accent);color:var(--accent);text-decoration:none;border-radius:999px;font-size:14px;letter-spacing:0.08em;text-transform:uppercase;transition:all .5s;position:relative;overflow:hidden}
+  .contact-cta::before{content:"";position:absolute;inset:0;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .6s cubic-bezier(.7,0,.3,1);z-index:-1}
+  .contact-cta:hover{color:#0a0f0d}
+  .contact-cta:hover::before{transform:scaleX(1)}
+
+  .contact-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;border-top:1px solid var(--line);padding-top:60px;margin-top:80px}
+  .contact-grid h4{font-family:'Fraunces',serif;font-weight:300;font-size:13px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:16px}
+  .contact-grid p,.contact-grid a{font-size:18px;color:var(--ink);text-decoration:none;line-height:1.6;font-weight:300}
+  .contact-grid a:hover{color:var(--accent)}
+
+  footer{margin-top:120px;border-top:1px solid var(--line);padding-top:32px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--ink-dim);letter-spacing:0.06em;flex-wrap:wrap;gap:20px}
+
+  /* ---------- Reveal utilities ---------- */
+  .reveal-line{overflow:hidden;display:block}
+  .reveal-line > *{display:inline-block;will-change:transform;transform:translateY(110%)}
+
+  /* ---------- Responsive ---------- */
+  @media(max-width:1100px){
+    nav{padding:20px 24px}
+    nav ul{gap:24px}
+    nav ul a{font-size:12px}
+    section{padding:110px 28px}
+    #hero{padding-top:160px}
+    #hero .container{gap:48px}
+    .hero-stats b{font-size:36px}
+  }
+  @media(max-width:860px){
+    nav{padding:16px 20px;gap:12px}
+    nav ul{display:none}
+    nav .brand{font-size:18px}
+    nav .cta{padding:9px 14px;font-size:11px}
+    section{padding:90px 20px}
+    #hero{padding-top:140px;min-height:auto}
+    #hero .container{grid-template-columns:1fr;gap:36px}
+    .hero-stats{gap:20px;flex-wrap:wrap;margin-top:36px;padding-top:24px}
+    .hero-stats > div{flex:1 1 130px}
+    .hero-stats b{font-size:32px}
+    .scroll-hint{display:none}
+    .eyebrow{font-size:11px;margin-bottom:18px}
+    .about-grid{grid-template-columns:repeat(2,1fr);margin-top:80px}
+    .about-grid > div{padding:28px 20px}
+    .about-grid b{font-size:44px}
+    .services-head{flex-direction:column;align-items:flex-start;margin-bottom:48px}
+    .services-head p{max-width:100%}
+    .service-item{grid-template-columns:48px 1fr 32px;gap:16px;padding:28px 0}
+    .service-item h3{grid-column:2 / 4;font-size:22px}
+    .service-item p{grid-column:2 / 4;display:block;font-size:13px;margin-top:8px}
+    .service-item .svc-arrow{grid-column:3;grid-row:1;font-size:24px;align-self:start}
+    .service-item:hover{padding:36px 16px}
+    .impact-grid{grid-template-columns:1fr;gap:24px}
+    .impact-card{padding:36px 24px;border-radius:18px}
+    .impact-card .stats{flex-wrap:wrap;gap:20px}
+    .marquee{padding:36px 0}
+    #process{padding:120px 20px}
+    .process-head{grid-template-columns:1fr;gap:24px;margin-bottom:60px}
+    .process-track{padding-left:28px}
+    .process-step{grid-template-columns:1fr;gap:12px;padding:32px 0}
+    .process-step::before{left:-32px;top:40px}
+    #contact{padding:120px 20px 40px}
+    .contact-hero{margin-bottom:48px}
+    .contact-cta{padding:18px 26px;font-size:12px;margin-top:32px}
+    .contact-grid{grid-template-columns:1fr;gap:28px;margin-top:48px;padding-top:40px}
+    footer{margin-top:80px;flex-direction:column;align-items:flex-start;text-align:left}
+    .morph-blob{filter:blur(50px);opacity:.45}
+  }
+  @media(max-width:480px){
+    nav .brand{font-size:16px}
+    nav .cta span{display:none}
+    nav .cta{padding:8px 12px}
+    section{padding:80px 16px}
+    #hero{padding-top:120px}
+    h1{font-size:clamp(44px,12vw,72px)}
+    h2{font-size:clamp(34px,9vw,56px)}
+    .hero-meta{font-size:13px}
+    .hero-stats{gap:16px}
+    .hero-stats b{font-size:26px}
+    .hero-stats span{font-size:10px}
+    .manifesto{font-size:clamp(22px,6vw,32px)}
+    .about-grid{grid-template-columns:1fr 1fr;margin-top:56px}
+    .about-grid b{font-size:36px}
+    .about-grid span{font-size:11px}
+    .service-item{grid-template-columns:36px 1fr 28px;padding:22px 0}
+    .service-item h3{font-size:19px}
+    .service-item p{font-size:12.5px}
+    .impact-card{padding:28px 20px}
+    .impact-card .big{font-size:clamp(48px,14vw,72px)}
+    .impact-card .stats div b{font-size:20px}
+    .contact-hero h2{font-size:clamp(44px,15vw,72px)}
+    .marquee-track{font-size:clamp(28px,9vw,48px);gap:48px}
+    .marquee-track span{gap:48px}
+  }
+  @media(hover:none){
+    .service-item:hover{padding:28px 0}
+    .service-item:hover::before{transform:scaleY(0)}
+    .service-item:hover .svc-num,.service-item:hover .svc-arrow,.service-item:hover h3{color:inherit}
+    .service-item:hover p{color:var(--ink-dim)}
+    .service-item:hover .svc-arrow{transform:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- Loader -->
+<div class="loader" id="loader">
+  <div class="loader-logo">
+    <span class="lw"><span>GS</span></span>
+    <span class="lw"><span>Energy</span></span>
+    <span class="lw"><span>Group</span></span>
+  </div>
+  <div class="loader-bar"><div class="fill"></div></div>
+  <div class="loader-pct"><span id="loaderPct">0</span>%</div>
+</div>
+
+<!-- Morph blobs (shared elements that morph between sections) -->
+<div class="morph-stage" aria-hidden="true">
+  <svg id="blob1" class="morph-blob" width="600" height="600" viewBox="0 0 600 600" style="left:-10%;top:5%">
+    <path fill="#c8ff5a" d="M421.5,328Q380,406,300,427.5Q220,449,167,388.5Q114,328,128.5,251.5Q143,175,217.5,142.5Q292,110,367,140Q442,170,449,235Q456,300,421.5,328Z"></path>
+  </svg>
+  <svg id="blob2" class="morph-blob" width="500" height="500" viewBox="0 0 500 500" style="right:-5%;top:30%">
+    <path fill="#7cf2c8" d="M381,310Q347,370,278,388Q209,406,151,358Q93,310,113.5,239.5Q134,169,194,135.5Q254,102,313,138.5Q372,175,396.5,237.5Q421,300,381,310Z"></path>
+  </svg>
+  <svg id="blob3" class="morph-blob" width="450" height="450" viewBox="0 0 450 450" style="left:30%;bottom:-10%">
+    <path fill="#f5d36b" d="M345,279Q307,358,221.5,358Q136,358,118,279Q100,200,141,148Q182,96,253,114Q324,132,343.5,191Q363,250,345,279Z"></path>
+  </svg>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="brand">GS<b>•</b>Energy</a>
+  <ul>
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#impact">Impact</a></li>
+    <li><a href="#process">Process</a></li>
+  </ul>
+  <a href="#contact" class="cta">Start a project →</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="container">
+    <div>
+      <div class="eyebrow" data-anim="fade">NYC · NJ · NYS · Building Performance</div>
+      <h1 class="hero-title">
+        <span class="line"><span>Performance</span></span>
+        <span class="line"><span>today.</span></span>
+        <span class="line"><span class="italic">Sustainability</span></span>
+        <span class="line"><span>tomorrow.</span></span>
+      </h1>
+    </div>
+    <div>
+      <p class="hero-meta" data-anim="fade"><strong>GS Energy Group</strong> is an independent consulting firm engineering smarter, lower-carbon buildings — from commissioning and audits to LL97 compliance — for commercial, institutional, and multifamily portfolios.</p>
+      <div class="hero-stats">
+        <div><b data-count="55">0</b><span>Project locations</span></div>
+        <div><b data-count="3.95" data-suffix="M">0</b><span>kWh saved / year</span></div>
+        <div><b data-count="686" data-prefix="$" data-suffix="K">0</b><span>Annual savings</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-hint">Scroll</div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="eyebrow">01 — Who we are</div>
+    <p class="manifesto">
+      We work where <em>engineering meets accountability</em>. Our team — Certified Energy Managers, Building Commissioning Professionals, and Professional Engineers — turns complex systems into measurable outcomes: lower bills, lower carbon, and buildings that simply <em>work better</em>.
+    </p>
+    <div class="about-grid">
+      <div><b>PE</b><span>Professional Engineers</span></div>
+      <div><b>CEM</b><span>Certified Energy Managers</span></div>
+      <div><b>BCxP</b><span>Building Commissioning Pros</span></div>
+      <div><b>OSHA</b><span>Arc-flash &amp; safety trained</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="container">
+    <div class="services-head">
+      <div>
+        <div class="eyebrow">02 — Capabilities</div>
+        <h2>Four disciplines.<br><span class="italic">One outcome.</span></h2>
+      </div>
+      <p>From design-phase commissioning to retro-fit code compliance, our scope covers the full lifecycle of a high-performance building.</p>
+    </div>
+    <div class="services-list">
+      <div class="service-item">
+        <div class="svc-num">/01</div>
+        <h3>Building Commissioning</h3>
+        <p>System testing, validation, and documentation — design and submittal reviews, functional performance tests, and turnover support.</p>
+        <div class="svc-arrow">→</div>
+      </div>
+      <div class="service-item">
+        <div class="svc-num">/02</div>
+        <h3>Energy Audits &amp; Assessments</h3>
+        <p>Comprehensive ASHRAE-level evaluations — utility analysis, equipment review, and prioritized savings opportunities.</p>
+        <div class="svc-arrow">→</div>
+      </div>
+      <div class="service-item">
+        <div class="svc-num">/03</div>
+        <h3>HVAC &amp; Controls Optimization</h3>
+        <p>System diagnostics, controls sequence review, and efficiency tuning that holds up after we leave the site.</p>
+        <div class="svc-arrow">→</div>
+      </div>
+      <div class="service-item">
+        <div class="svc-num">/04</div>
+        <h3>Energy Code &amp; Compliance</h3>
+        <p>NYC Local Laws — LL97, LL88, LL87 — plus lighting and controls compliance, filed and defended.</p>
+        <div class="svc-arrow">→</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>LL97 <i>·</i> LL88 <i>·</i> LL87 <i>·</i> ASHRAE Level II <i>·</i> Cx <i>·</i> Retro-Cx <i>·</i> M&amp;V <i>·</i> LL97 <i>·</i> LL88 <i>·</i> LL87 <i>·</i> ASHRAE Level II <i>·</i> Cx <i>·</i> Retro-Cx <i>·</i> M&amp;V <i>·</i></span>
+  </div>
+</div>
+
+<!-- IMPACT -->
+<section id="impact">
+  <div class="container">
+    <div class="impact-headline">
+      <div class="eyebrow" style="justify-content:center">03 — Measured impact</div>
+      <h2>Numbers that <span class="italic">survive audit.</span></h2>
+    </div>
+    <div class="impact-grid">
+      <div class="impact-card">
+        <div class="tag">Industrial portfolio</div>
+        <div class="big" data-count="2.66" data-suffix="M">0<sup>kWh/yr</sup></div>
+        <p class="desc">A multi-site industrial client realized a 26.5% reduction in electrical demand through commissioning and controls retrofits — verified through 12 months of post-implementation M&amp;V.</p>
+        <div class="stats">
+          <div><b data-count="26.5" data-suffix="%">0</b><span>Reduction</span></div>
+          <div><b data-count="462" data-prefix="$" data-suffix="K">0</b><span>Saved annually</span></div>
+        </div>
+      </div>
+      <div class="impact-card">
+        <div class="tag">Commercial portfolio</div>
+        <div class="big" data-count="1.29" data-suffix="M">0<sup>kWh/yr</sup></div>
+        <p class="desc">An office portfolio achieved 16.8% in measurable savings from HVAC scheduling, sequence corrections, and LL97 alignment — without capital replacement.</p>
+        <div class="stats">
+          <div><b data-count="16.8" data-suffix="%">0</b><span>Reduction</span></div>
+          <div><b data-count="224" data-prefix="$" data-suffix="K">0</b><span>Saved annually</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="process">
+  <div class="container">
+    <div class="process-head">
+      <div>
+        <div class="eyebrow">04 — How we work</div>
+        <h2>From signal<br>to <span class="italic">savings.</span></h2>
+      </div>
+      <p>Every engagement runs on the same disciplined cadence — diagnose first, design once, verify always. Below is what a typical retrofit looks like in motion.</p>
+    </div>
+    <div class="process-track" id="processTrack">
+      <div class="process-step">
+        <div class="step-num">STEP 01</div>
+        <h3>Discover</h3>
+        <p>Site walks, utility data review, and stakeholder interviews to map the actual operation — not the as-designed one.</p>
+      </div>
+      <div class="process-step">
+        <div class="step-num">STEP 02</div>
+        <h3>Diagnose</h3>
+        <p>ASHRAE-aligned analysis identifies the specific equipment, sequences, and code gaps driving cost and risk.</p>
+      </div>
+      <div class="process-step">
+        <div class="step-num">STEP 03</div>
+        <h3>Design &amp; Implement</h3>
+        <p>We specify retrofits, oversee execution, and write functional tests that hold contractors to a measurable standard.</p>
+      </div>
+      <div class="process-step">
+        <div class="step-num">STEP 04</div>
+        <h3>Verify</h3>
+        <p>M&amp;V across a full operating year, plus LL97 reporting support — so the savings on paper match the meter.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-hero">
+      <div class="eyebrow" style="justify-content:center">05 — Let's build</div>
+      <h2>
+        <span class="reveal"><span>Lower carbon.</span></span>
+        <span class="reveal"><span class="italic">Lower bills.</span></span>
+        <span class="reveal"><span>Start here.</span></span>
+      </h2>
+      <a href="mailto:hello@gsenergygroup.com" class="contact-cta">Request an assessment <span>→</span></a>
+    </div>
+    <div class="contact-grid">
+      <div>
+        <h4>Inquiries</h4>
+        <a href="mailto:hello@gsenergygroup.com">hello@gsenergygroup.com</a>
+      </div>
+      <div>
+        <h4>Service area</h4>
+        <p>New York City · New Jersey<br>New York State</p>
+      </div>
+      <div>
+        <h4>Sectors</h4>
+        <p>Commercial · Institutional<br>Multifamily · Public</p>
+      </div>
+    </div>
+    <footer>
+      <div>© 2026 GS Energy Group LLC. All rights reserved.</div>
+      <div>Performance Today · Sustainability Tomorrow</div>
+    </footer>
+  </div>
+</section>
+
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+
+  /* ===== Loader ===== */
+  const pctEl = document.getElementById('loaderPct');
+  const pctObj = {v:0};
+  const loaderTl = gsap.timeline({
+    onComplete:()=>{
+      const ldr = document.getElementById('loader');
+      if(ldr) ldr.style.display='none';
+      heroIntro();
+      ScrollTrigger.refresh();
+    }
+  });
+  loaderTl
+    .to('.loader-logo .lw > span',{yPercent:0,duration:1.1,ease:'expo.out',stagger:.08},0.2)
+    .to('.loader-bar .fill',{scaleX:1,duration:1.6,ease:'power2.inOut'},0.3)
+    .to(pctObj,{v:100,duration:1.6,ease:'power2.inOut',
+      onUpdate:()=>{ if(pctEl) pctEl.textContent = Math.round(pctObj.v); }},0.3)
+    .to('.loader-logo .lw > span',{yPercent:-110,duration:.8,ease:'expo.in',stagger:.05},'+=0.2')
+    .to('.loader-bar, .loader-pct',{opacity:0,duration:.4,ease:'power2.out'},'<')
+    .to('.loader',{yPercent:-100,duration:1.1,ease:'expo.inOut'},'-=0.1');
+
+  /* ===== Hero intro ===== */
+  function heroIntro(){
+    gsap.set('.hero-title .line span',{yPercent:110});
+    gsap.to('.hero-title .line span',{
+      yPercent:0,duration:1.4,ease:'expo.out',stagger:0.08
+    });
+    gsap.from('[data-anim="fade"]',{opacity:0,y:24,duration:1,ease:'power3.out',stagger:.1,delay:.4});
+    gsap.from('.hero-stats > div',{opacity:0,y:30,duration:1,ease:'power3.out',stagger:.1,delay:.9});
+    gsap.from('.scroll-hint',{opacity:0,duration:1,delay:1.4});
+    gsap.from('nav',{y:-30,opacity:0,duration:1,ease:'power3.out',delay:.2});
+
+    /* number counters */
+    document.querySelectorAll('[data-count]').forEach(el=>{
+      const target = parseFloat(el.dataset.count);
+      const decimals = (target % 1 !== 0) ? 2 : 0;
+      const obj={v:0};
+      gsap.to(obj,{
+        v:target,
+        duration:2.2,
+        ease:'power3.out',
+        delay:.8,
+        scrollTrigger:{trigger:el,start:'top 85%'},
+        onUpdate:()=>{
+          let val = obj.v.toFixed(decimals);
+          el.innerHTML = (el.dataset.prefix||'') + val + (el.dataset.suffix||'') +
+            (el.querySelector('sup') ? '' : '');
+          // restore sup if present
+          if(el.dataset.hasSup){ el.innerHTML += el.dataset.hasSup; }
+        }
+      });
+      // preserve sup tag if any
+      const sup = el.querySelector('sup');
+      if(sup){ el.dataset.hasSup = sup.outerHTML; }
+    });
+  }
+
+  /* ===== Morph blobs — these are the SHARED elements that "morph" between sections ===== */
+  const blob1 = document.getElementById('blob1');
+  const blob2 = document.getElementById('blob2');
+  const blob3 = document.getElementById('blob3');
+
+  // Subtle continuous breath
+  gsap.to([blob1,blob2,blob3],{
+    scale:1.1,duration:8,ease:'sine.inOut',yoyo:true,repeat:-1,stagger:.6
+  });
+
+  // Section-driven morph: as you scroll, the blobs reposition + recolor + reshape,
+  // creating the morphing transition feel between sections.
+  const sections = ['#hero','#about','#services','#impact','#process','#contact'];
+  const morphStates = [
+    {b1:{x:'-15vw',y:'5vh',scale:1,rotation:0,opacity:.55},  b2:{x:'10vw',y:'30vh',scale:1,opacity:.5},   b3:{x:'30vw',y:'70vh',scale:1,opacity:.4}},
+    {b1:{x:'70vw',y:'10vh',scale:1.4,rotation:90,opacity:.4}, b2:{x:'-20vw',y:'50vh',scale:1.6,opacity:.35}, b3:{x:'40vw',y:'80vh',scale:.8,opacity:.5}},
+    {b1:{x:'40vw',y:'-10vh',scale:.9,rotation:180,opacity:.5}, b2:{x:'60vw',y:'40vh',scale:1.2,opacity:.45}, b3:{x:'-15vw',y:'60vh',scale:1.4,opacity:.35}},
+    {b1:{x:'-30vw',y:'40vh',scale:2,rotation:270,opacity:.35}, b2:{x:'50vw',y:'-10vh',scale:.8,opacity:.6}, b3:{x:'70vw',y:'70vh',scale:1.1,opacity:.4}},
+    {b1:{x:'80vw',y:'40vh',scale:1.1,rotation:360,opacity:.45}, b2:{x:'-30vw',y:'10vh',scale:1.4,opacity:.4}, b3:{x:'30vw',y:'60vh',scale:1.6,opacity:.3}},
+    {b1:{x:'25vw',y:'20vh',scale:1.6,rotation:450,opacity:.4}, b2:{x:'70vw',y:'70vh',scale:1.2,opacity:.45}, b3:{x:'-10vw',y:'40vh',scale:1.3,opacity:.35}}
+  ];
+
+  sections.forEach((sel,i)=>{
+    ScrollTrigger.create({
+      trigger:sel,
+      start:'top 60%',
+      end:'bottom 40%',
+      onEnter:()=>morphTo(i),
+      onEnterBack:()=>morphTo(i)
+    });
+  });
+
+  function morphTo(i){
+    const s = morphStates[i];
+    gsap.to(blob1,{...s.b1,duration:1.8,ease:'expo.inOut'});
+    gsap.to(blob2,{...s.b2,duration:1.8,ease:'expo.inOut',delay:.05});
+    gsap.to(blob3,{...s.b3,duration:1.8,ease:'expo.inOut',delay:.1});
+  }
+
+  /* ===== About manifesto — word-by-word reveal ===== */
+  const manifesto = document.querySelector('.manifesto');
+  if(manifesto){
+    const words = manifesto.innerHTML.split(/(\s+)/).map(w=>{
+      if(w.trim()==='') return w;
+      // preserve <em> tags
+      if(w.startsWith('<')||w.endsWith('>')) return w;
+      return `<span class="word"><span>${w}</span></span>`;
+    }).join('');
+    manifesto.innerHTML = words;
+    gsap.set('.manifesto .word > span',{yPercent:110});
+    gsap.to('.manifesto .word > span',{
+      yPercent:0,duration:1.1,ease:'expo.out',stagger:.025,
+      scrollTrigger:{trigger:'#about',start:'top 60%'}
+    });
+  }
+
+  gsap.from('.about-grid > div',{
+    yPercent:100,opacity:0,duration:1,ease:'expo.out',stagger:.08,
+    scrollTrigger:{trigger:'.about-grid',start:'top 80%'}
+  });
+
+  /* ===== Services list ===== */
+  gsap.from('.services-head',{opacity:0,y:40,duration:1,ease:'power3.out',
+    scrollTrigger:{trigger:'#services',start:'top 70%'}});
+  gsap.from('.service-item',{
+    opacity:0,y:60,duration:1.1,ease:'expo.out',stagger:.1,
+    scrollTrigger:{trigger:'.services-list',start:'top 75%'}
+  });
+
+  /* ===== Marquee ===== */
+  const track = document.querySelector('.marquee-track span');
+  if(track){
+    gsap.to('.marquee-track',{xPercent:-50,duration:30,ease:'none',repeat:-1});
+    // duplicate content for seamless loop
+    track.innerHTML = track.innerHTML + track.innerHTML;
+  }
+
+  /* ===== Impact cards ===== */
+  gsap.from('.impact-headline',{opacity:0,y:50,duration:1.2,ease:'expo.out',
+    scrollTrigger:{trigger:'#impact',start:'top 70%'}});
+  gsap.from('.impact-card',{
+    opacity:0,y:80,scale:.95,duration:1.4,ease:'expo.out',stagger:.15,
+    scrollTrigger:{trigger:'.impact-grid',start:'top 80%'}
+  });
+
+  /* ===== Process — animated rail + step activation ===== */
+  ScrollTrigger.create({
+    trigger:'#process',
+    start:'top 50%',
+    end:'bottom 70%',
+    onUpdate:(self)=>{
+      gsap.to('.process-track::after',{}); // CSS pseudo can't be animated directly via gsap — use a real element instead
+    }
+  });
+
+  // Replace the CSS pseudo with a real progress element to drive with GSAP
+  const track2 = document.getElementById('processTrack');
+  if(track2){
+    const progress = document.createElement('div');
+    progress.style.cssText='position:absolute;left:-3px;top:0;width:7px;height:0;background:var(--accent);border-radius:4px';
+    track2.appendChild(progress);
+    gsap.to(progress,{
+      height:'100%',ease:'none',
+      scrollTrigger:{trigger:track2,start:'top 60%',end:'bottom 70%',scrub:.6}
+    });
+  }
+  document.querySelectorAll('.process-step').forEach((step)=>{
+    ScrollTrigger.create({
+      trigger:step,start:'top 70%',end:'bottom 30%',
+      onToggle:self=>step.classList.toggle('active',self.isActive)
+    });
+    gsap.from(step.children,{
+      opacity:0,y:40,duration:1,ease:'power3.out',stagger:.1,
+      scrollTrigger:{trigger:step,start:'top 80%'}
+    });
+  });
+
+  /* ===== Contact reveal ===== */
+  gsap.set('.contact-hero h2 .reveal span',{yPercent:110});
+  gsap.to('.contact-hero h2 .reveal span',{
+    yPercent:0,duration:1.4,ease:'expo.out',stagger:.12,
+    scrollTrigger:{trigger:'#contact',start:'top 70%'}
+  });
+  gsap.from('.contact-cta',{opacity:0,y:30,duration:1,ease:'power3.out',
+    scrollTrigger:{trigger:'.contact-cta',start:'top 90%'}});
+  gsap.from('.contact-grid > div',{opacity:0,y:30,duration:1,ease:'power3.out',stagger:.1,
+    scrollTrigger:{trigger:'.contact-grid',start:'top 85%'}});
+  gsap.from('footer',{opacity:0,duration:1,
+    scrollTrigger:{trigger:'footer',start:'top 95%'}});
+
+  /* ===== Smooth anchor scroll ===== */
+  document.querySelectorAll('a[href^="#"]').forEach(a=>{
+    a.addEventListener('click',e=>{
+      const t = document.querySelector(a.getAttribute('href'));
+      if(t){e.preventDefault();
+        gsap.to(window,{duration:1.4,scrollTo:{y:t,offsetY:0},ease:'expo.inOut'});
+      }
+    });
+  });
+
+  /* ===== Section-to-section "morph" cue: brief flash on entering ===== */
+  sections.forEach(sel=>{
+    const el = document.querySelector(sel);
+    ScrollTrigger.create({
+      trigger:el,start:'top 90%',
+      onEnter:()=>{
+        gsap.fromTo(el,{filter:'brightness(0.6)'},{filter:'brightness(1)',duration:1.4,ease:'expo.out'});
+      }
+    });
+  });
+</script>
+
+<!-- ScrollTo plugin (loaded after to avoid blocking) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
+<script>gsap.registerPlugin(ScrollToPlugin);</script>
+
+</body>
+</html>
